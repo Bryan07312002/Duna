@@ -112,7 +112,7 @@ func ReadMigrationDir(dir string, fs FileSystem) ([]*Migration, error) {
 
 	// Sort descending (newest first)
 	sort.Slice(migrations, func(i, j int) bool {
-		return migrations[i].timestamp > migrations[j].timestamp
+		return migrations[i].timestamp < migrations[j].timestamp
 	})
 
 	return migrations, nil

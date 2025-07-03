@@ -132,8 +132,7 @@ func (p *PostgresDatabase) Migrate() error {
 func (p *PostgresDatabase) execUpMigrations(
 	migrations []*Migration,
 ) error {
-	for i := 0; i < len(migrations); i++ {
-		migration := migrations[i]
+	for _, migration := range migrations {
 		query, err := migration.GetUpQuery()
 		if err != nil {
 			return err
