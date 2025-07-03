@@ -25,7 +25,7 @@ Commands:
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println(HELP_MESSAGE)
+		println(HELP_MESSAGE)
 		os.Exit(1)
 	}
 
