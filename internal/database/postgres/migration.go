@@ -80,6 +80,9 @@ type Migration struct {
 	fs        FileSystem
 }
 
+// Read a directory searching for migrations folders, a migration folder
+// is defined by <number>-<name>, all that does not match this style will be
+// ignored
 func ReadMigrationDir(dir string, fs FileSystem) ([]*Migration, error) {
 	entries, err := fs.ReadDir(dir)
 	if err != nil {
