@@ -9,8 +9,12 @@ import (
 
 type Database interface {
 	Migrate() error
+	// users
 	InsertUser(user models.User) error
 	GetUserByUsername(username string, hash hash.HashStrategy) (models.User, error)
+
+	// matches
+	InsertMatch(match models.Match) error
 }
 
 func NewDatabase() (Database, error) {
