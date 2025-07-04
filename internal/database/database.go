@@ -1,13 +1,15 @@
 package database
 
 import (
-	"duna/internal/auth"
 	"duna/internal/database/postgres"
+
+	"duna/internal/user"
 )
 
 type Database interface {
 	Migrate() error
-	InsertUser(user auth.User) error
+	InsertUser(user user.User) error
+	GetUserByUsername(username string, hash user.HashStrategy) (user.User, error)
 }
 
 func NewDatabase() (Database, error) {

@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"errors"
@@ -11,9 +11,8 @@ type HashStrategy interface {
 }
 
 type Password struct {
-	str           string
-	hash          HashStrategy
-	alreadyHashed bool
+	value string
+	hash  HashStrategy
 }
 
 func isPasswordValid(p string) error {
@@ -61,30 +60,22 @@ func NewPassword(password string, alreadyHashed bool,
 		if err := isPasswordValid(password); err != nil {
 			return Password{}, err
 		}
+
+		hasedPassword, err := hash.Encode(password)
+		if err != nil {
+			return Password{}, err
+		}
+		password = hasedPassword
 	}
 
 	return Password{
-		str:           password,
+		value:         password,
 		hash:          hash,
-		alreadyHashed: alreadyHashed,
 	}, nil
 }
 
-func (p *Password) Hash() (Password, error) {
-	hashed, err := p.hash.Encode(p.str)
-	if err != nil {
-		return Password{}, err
-	}
-
-	return NewPassword(hashed, p.alreadyHashed, p.hash)
-}
-
-func (p *Password) Compare(incomingPassword string) bool {
-	if !p.alreadyHashed {
-		return false
-	}
-
-	return p.hash.Compare(p.str, incomingPassword)
+func (p Password) Compare(incomingPassword string) bool {
+	return p.hash.Compare(p.value, incomingPassword)
 }
 
 // Always obfuscate when converted to string
