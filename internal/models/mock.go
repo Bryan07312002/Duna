@@ -1,4 +1,4 @@
-package user
+package models
 
 type HashStrategyMock struct {
 	FuncEncode  func(str string) (string, error)

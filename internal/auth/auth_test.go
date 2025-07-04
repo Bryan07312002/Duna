@@ -2,7 +2,8 @@ package auth
 
 import (
 	"duna/internal/database"
-	"duna/internal/user"
+	"duna/internal/hash"
+	"duna/internal/models"
 	"errors"
 	"fmt"
 	"testing"
@@ -17,19 +18,19 @@ const (
 	testingUserPassword = "testing123"
 )
 
-func getTestUser(hash user.HashStrategy) (user.User, error) {
-	email, err := user.NewEmail(testingUserEmail)
+func getTestUser(hash hash.HashStrategy) (models.User, error) {
+	email, err := models.NewEmail(testingUserEmail)
 	if err != nil {
-		return user.User{}, fmt.Errorf("error creating email: %s", err.Error())
+		return models.User{}, fmt.Errorf("error creating email: %s", err.Error())
 	}
 
-	password, err := user.NewPassword(testingUserPassword, true, hash)
+	password, err := models.NewPassword(testingUserPassword, true, hash)
 	if err != nil {
-		return user.User{}, fmt.Errorf("error creating testing password: %s",
+		return models.User{}, fmt.Errorf("error creating testing password: %s",
 			err.Error())
 	}
 
-	return user.NewUser(
+	return models.NewUser(
 		testingUserUUID,
 		testingUserUsername,
 		email,
@@ -38,7 +39,7 @@ func getTestUser(hash user.HashStrategy) (user.User, error) {
 }
 
 func TestAuthenticate_Success(t *testing.T) {
-	mockHash := user.HashStrategyMock{
+	mockHash := models.HashStrategyMock{
 		FuncCompare: func(enconded, str string) bool {
 			assert.Equal(t, enconded, testingUserPassword)
 			return true
@@ -52,7 +53,7 @@ func TestAuthenticate_Success(t *testing.T) {
 	}
 
 	mockDB := &database.MockDatabase{
-		FuncGetUserByUsername: func(username string, hash user.HashStrategy) (user.User, error) {
+		FuncGetUserByUsername: func(username string, hash hash.HashStrategy) (models.User, error) {
 			assert.Equal(t, testingUserUsername, username)
 			return testUser, nil
 		},
@@ -75,7 +76,7 @@ func TestAuthenticate_Success(t *testing.T) {
 }
 
 func TestAuthenticate_PasswordsDontMatch(t *testing.T) {
-	mockHash := user.HashStrategyMock{
+	mockHash := models.HashStrategyMock{
 		FuncCompare: func(enconded, str string) bool {
 			return false
 		},
@@ -88,7 +89,7 @@ func TestAuthenticate_PasswordsDontMatch(t *testing.T) {
 	}
 
 	mockDB := &database.MockDatabase{
-		FuncGetUserByUsername: func(username string, hash user.HashStrategy) (user.User, error) {
+		FuncGetUserByUsername: func(username string, hash hash.HashStrategy) (models.User, error) {
 			assert.Equal(t, testingUserUsername, username)
 			return testUser, nil
 		},
@@ -105,13 +106,13 @@ func TestAuthenticate_PasswordsDontMatch(t *testing.T) {
 
 func TestAuthenticate_UserNotFound(t *testing.T) {
 	mockDB := &database.MockDatabase{
-		FuncGetUserByUsername: func(username string, hash user.HashStrategy) (user.User, error) {
-			return user.User{}, errors.New("user not found")
+		FuncGetUserByUsername: func(username string, hash hash.HashStrategy) (models.User, error) {
+			return models.User{}, errors.New("user not found")
 		},
 	}
 
 	mockStore := &MockSessionStore{}
-	mockHash := &user.HashStrategyMock{}
+	mockHash := &models.HashStrategyMock{}
 
 	auth := New(mockDB, mockStore, mockHash)
 

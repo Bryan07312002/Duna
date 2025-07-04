@@ -1,18 +1,14 @@
-package user
+package models
 
 import (
+	"duna/internal/hash"
 	"errors"
 	"unicode"
 )
 
-type HashStrategy interface {
-	Encode(str string) (string, error)
-	Compare(enconded, str string) bool
-}
-
 type Password struct {
 	value string
-	hash  HashStrategy
+	hash  hash.HashStrategy
 }
 
 func isPasswordValid(p string) error {
@@ -55,7 +51,7 @@ func isPasswordValid(p string) error {
 }
 
 func NewPassword(password string, alreadyHashed bool,
-	hash HashStrategy) (Password, error) {
+	hash hash.HashStrategy) (Password, error) {
 	if !alreadyHashed {
 		if err := isPasswordValid(password); err != nil {
 			return Password{}, err
@@ -69,8 +65,8 @@ func NewPassword(password string, alreadyHashed bool,
 	}
 
 	return Password{
-		value:         password,
-		hash:          hash,
+		value: password,
+		hash:  hash,
 	}, nil
 }
 

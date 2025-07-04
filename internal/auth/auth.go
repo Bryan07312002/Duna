@@ -3,7 +3,7 @@ package auth
 import (
 	"crypto/rand"
 	"duna/internal/database"
-	"duna/internal/user"
+	"duna/internal/hash"
 	"encoding/base64"
 	"errors"
 )
@@ -28,10 +28,10 @@ type SessionStore interface {
 type sessionAuthenticator struct {
 	db    database.Database
 	store SessionStore
-	hash  user.HashStrategy
+	hash  hash.HashStrategy
 }
 
-func New(db database.Database, store SessionStore, hash user.HashStrategy) SessionAuthenticator {
+func New(db database.Database, store SessionStore, hash hash.HashStrategy) SessionAuthenticator {
 	return &sessionAuthenticator{
 		db:    db,
 		store: store,

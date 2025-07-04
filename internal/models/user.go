@@ -1,4 +1,6 @@
-package user
+package models
+
+import "duna/internal/hash"
 
 type UUIDStrategy interface {
 	New() string
@@ -21,7 +23,7 @@ func NewUser(UUID, Username string, Email Email, Password Password) User {
 }
 
 func NewUserFromPrimitives(UUID, Username, Email, Password string,
-	passwordAlreadyHashed bool, hash HashStrategy) (User, error) {
+	passwordAlreadyHashed bool, hash hash.HashStrategy) (User, error) {
 	emailObj, err := NewEmail(Email)
 	if err != nil {
 		return User{}, err
